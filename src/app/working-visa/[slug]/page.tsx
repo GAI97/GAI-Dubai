@@ -1,3 +1,3 @@
-export { default, dynamic, generateStaticParams } from "../../working-holiday-visa/[slug]/page"
+export { default, dynamic, generateStaticParams } from "../../working-holiday/[slug]/page"
 
 

@@ -1,3 +1,3 @@
-export { default, dynamic } from "../working-holiday-visa/page"
+export { default, dynamic } from "../working-holiday/page"
 
 
