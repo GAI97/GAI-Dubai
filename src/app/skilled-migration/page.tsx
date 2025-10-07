@@ -20,7 +20,8 @@ export default async function SkilledMigrationIndexPage() {
 						const acf: any = (it as any)?.acf || {}
 						const title = (acf?.service_name as string) || it.title?.rendered || "Skilled Migration"
 						const subheading = (acf?.service_subheading as string) || ""
-						const img = (acf?.service_image?.url as string) || undefined
+                        // Prefer banner image like other sections; fallback to service_image
+                        const img = (acf?.banner_image?.url as string) || (acf?.service_image?.url as string) || undefined
 						return (
 							<Link href={`/skilled-migration/${it.slug}`} key={it.id} className="w-full max-w-[360px] mx-auto rounded-lg overflow-hidden flex flex-col relative group cursor-pointer hover:scale-105 transition-transform duration-300">
 								{/* Background Image with Dark Overlay */}

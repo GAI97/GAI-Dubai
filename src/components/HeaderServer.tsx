@@ -4,7 +4,7 @@ import { Phone } from "lucide-react"
 import HeaderNavClient from "@/components/HeaderNavClient"
 import HeaderNavDesktop from "@/components/HeaderNavDesktop"
 import FadeIn from "@/components/FadeIn"
-import { normalizeWpLink, fetchVisitVisas, fetchWorkPermits, fetchSkilledMigrations, fetchJobSeekerVisas } from "@/lib/wp-rest"
+import { normalizeWpLink, fetchVisitVisas, fetchWorkPermits, fetchSkilledMigrations, fetchJobSeekerVisas, fetchWorkingHolidayVisas } from "@/lib/wp-rest"
 
 async function fetchHeader() {
 	const baseUrl = process.env.WP_HEADER_URL || "http://gai.local/wp-json/wp/v2/header"
@@ -44,7 +44,8 @@ export default async function HeaderServer() {
 	const visitVisas = await fetchVisitVisas()
 	const workPermits = await fetchWorkPermits()
 	const skilledMigrations = await fetchSkilledMigrations()
-	const jobSeekerVisas = await fetchJobSeekerVisas()
+    const jobSeekerVisas = await fetchJobSeekerVisas()
+    const workingHolidayVisas = await fetchWorkingHolidayVisas()
 	return (
 		<FadeIn>
 			<header className="w-full border-b bg-white">
@@ -70,12 +71,13 @@ export default async function HeaderServer() {
 							)}
 						</div>
 						{/* Desktop menu */}
-						<HeaderNavDesktop 
+                        <HeaderNavDesktop 
 							menu={menu} 
 							visitVisas={visitVisas}
 							workPermits={workPermits}
 							skilledMigrations={skilledMigrations}
-							jobSeekerVisas={jobSeekerVisas}
+                            jobSeekerVisas={jobSeekerVisas}
+                            workingHolidayVisas={workingHolidayVisas}
 						/>
 						{/* Mobile hamburger (right column) */}
 						<div className="md:hidden flex justify-end">

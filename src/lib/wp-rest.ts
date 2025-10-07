@@ -514,37 +514,46 @@ export async function fetchJobSeekerVisaBySlug(slug: string): Promise<RestJobSee
 // WORKING-HOLIDAY-VISA HELPERS (new CPT)
 export type RestWorkingHolidayVisa = RestService
 
-function getWorkingHolidayVisaBase(): string | null {
-	const base = getWpRestBase()
-	if (!base) return null
-	return `${base}/wp/v2/working-holiday-visa`
+function getWorkingHolidayBases(): string[] {
+    const base = getWpRestBase()
+    if (!base) return []
+    // Support both the new CPT slug (working-holiday) and the previous (working-holiday-visa)
+    return [
+        `${base}/wp/v2/working-holiday`,
+        `${base}/wp/v2/working-holiday-visa`,
+    ]
 }
 
 export async function fetchWorkingHolidayVisas(): Promise<RestWorkingHolidayVisa[]> {
-	const base = getWorkingHolidayVisaBase()
-	if (!base) return []
-	const url = `${base}?per_page=100&_embed`
-	try {
-		const res = await fetch(url, { cache: 'no-store' })
-		if (!res.ok) return []
-		return (await res.json()) as RestWorkingHolidayVisa[]
-	} catch {
-		return []
-	}
+    const bases = getWorkingHolidayBases()
+    if (bases.length === 0) return []
+    for (const b of bases) {
+        const url = `${b}?per_page=100&_embed`
+        try {
+            const res = await fetch(url, { cache: 'no-store' })
+            if (res.ok) {
+                return (await res.json()) as RestWorkingHolidayVisa[]
+            }
+        } catch {}
+    }
+    return []
 }
 
 export async function fetchWorkingHolidayVisaBySlug(slug: string): Promise<RestWorkingHolidayVisa | null> {
-	const base = getWorkingHolidayVisaBase()
-	if (!base) return null
-	const url = `${base}?slug=${encodeURIComponent(slug)}&_embed`
-	try {
-		const res = await fetch(url, { cache: 'no-store' })
-		if (!res.ok) return null
-		const list = (await res.json()) as RestWorkingHolidayVisa[]
-		return list?.[0] ?? null
-	} catch {
-		return null
-	}
+    const bases = getWorkingHolidayBases()
+    if (bases.length === 0) return null
+    for (const b of bases) {
+        const url = `${b}?slug=${encodeURIComponent(slug)}&_embed`
+        try {
+            const res = await fetch(url, { cache: 'no-store' })
+            if (res.ok) {
+                const list = (await res.json()) as RestWorkingHolidayVisa[]
+                const first = list?.[0]
+                if (first) return first
+            }
+        } catch {}
+    }
+    return null
 }
 
 // CONTACT PAGE HELPERS
