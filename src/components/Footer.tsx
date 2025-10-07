@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Facebook, Instagram, Mail, MapPin, Phone, Clock } from "lucide-react"
-import { RestFooter } from "@/lib/wp-rest"
+import { RestFooter, normalizeWpLink } from "@/lib/wp-rest"
 
 interface FooterProps {
 	footerData: RestFooter | null
@@ -99,8 +99,8 @@ export default function Footer({ footerData }: FooterProps) {
 						<ul className="space-y-3">
 							{acf.footer_menu?.map((item, index) => (
 								<li key={index}>
-									<Link 
-										href={normalizeWpLink(item.footer_menu_item_link?.url) || "#"} 
+                                    <Link 
+                                        href={normalizeWpLink(item.footer_menu_item_link?.url) || "#"} 
 										className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors"
 									>
 										<span className="w-2 h-2 bg-[#2dc0d9] rounded-full"></span>
@@ -135,8 +135,8 @@ export default function Footer({ footerData }: FooterProps) {
 						<ul className="space-y-3">
 							{acf.important_links_block?.map((link, index) => (
 								<li key={index}>
-									<Link 
-										href={normalizeWpLink(link.important_menu_item_link?.url) || "#"} 
+                                    <Link 
+                                        href={normalizeWpLink(link.important_menu_item_link?.url) || "#"} 
 										className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors"
 									>
 										<span className="w-2 h-2 bg-[#2dc0d9] rounded-full"></span>
@@ -171,17 +171,4 @@ export default function Footer({ footerData }: FooterProps) {
 	)
 }
 
-// Helper function to normalize WordPress links
-function normalizeWpLink(href?: string): string | undefined {
-	if (!href) return undefined
-	try {
-		const url = new URL(href)
-		// If it's a WordPress backend URL, convert to frontend path
-		if (url.hostname.includes('gai.local')) {
-			return url.pathname.replace(/\/$/, '') || '/'
-		}
-		return href
-	} catch {
-		return href
-	}
-}
+// normalizeWpLink imported from '@/lib/wp-rest'
