@@ -133,13 +133,16 @@ export default async function VisitVisaDetailPage(props: { params: Promise<{ slu
 								{sec2Description ? (
 									<p className="mt-3 text-[15px] leading-7 text-neutral-700 whitespace-pre-line">{sec2Description}</p>
 								) : null}
-								{sec2Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec2Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
+												{sec2Points.length ? (
+                                                    <ul className="mt-5 space-y-3">
+														{sec2Points.map((p, i) => (
+                                                            <li key={i} className="flex items-start gap-2">
+                                                                <CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" />
+                                                                <span className="text-[15px] text-neutral-800 leading-7">{p}</span>
+															</li>
+														))}
+													</ul>
+												) : null}
 							</section>
 						) : null}
 
@@ -152,13 +155,16 @@ export default async function VisitVisaDetailPage(props: { params: Promise<{ slu
 										<Image src={sec3Image} alt={sec3Heading || title} width={1200} height={600} className="w-full h-auto object-cover" />
 									</div>
 								) : null}
-								{sec3Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec3Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
+												{sec3Points.length ? (
+                                                    <ul className="mt-5 space-y-3">
+														{sec3Points.map((p, i) => (
+                                                            <li key={i} className="flex items-start gap-2">
+                                                                <CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" />
+                                                                <span className="text-[15px] text-neutral-800 leading-7">{p}</span>
+															</li>
+														))}
+													</ul>
+												) : null}
 							</section>
 						) : null}
 
@@ -169,13 +175,16 @@ export default async function VisitVisaDetailPage(props: { params: Promise<{ slu
 								{sec4Description ? (
 									<p className="mt-3 text-[15px] leading-7 text-neutral-700 whitespace-pre-line">{sec4Description}</p>
 								) : null}
-								{sec4Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec4Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
+												{sec4Points.length ? (
+                                                    <ul className="mt-5 space-y-3">
+														{sec4Points.map((p, i) => (
+                                                            <li key={i} className="flex items-start gap-2">
+                                                                <CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" />
+                                                                <span className="text-[15px] text-neutral-800 leading-7">{p}</span>
+															</li>
+														))}
+													</ul>
+												) : null}
 							</section>
 						) : null}
 
@@ -186,13 +195,16 @@ export default async function VisitVisaDetailPage(props: { params: Promise<{ slu
 								{sec5Description ? (
 									<p className="mt-3 text-[15px] leading-7 text-neutral-700 whitespace-pre-line">{sec5Description}</p>
 								) : null}
-								{sec5Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec5Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
+												{sec5Points.length ? (
+                                                    <ul className="mt-5 space-y-3">
+														{sec5Points.map((p, i) => (
+                                                            <li key={i} className="flex items-start gap-2">
+                                                                <CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" />
+                                                                <span className="text-[15px] text-neutral-800 leading-7">{p}</span>
+															</li>
+														))}
+													</ul>
+												) : null}
 							</section>
 						) : null}
 
@@ -203,13 +215,16 @@ export default async function VisitVisaDetailPage(props: { params: Promise<{ slu
 								{sec6Description ? (
 									<p className="mt-3 text-[15px] leading-7 text-neutral-700 whitespace-pre-line">{sec6Description}</p>
 								) : null}
-								{sec6Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec6Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
+												{sec6Points.length ? (
+                                                    <ul className="mt-5 space-y-3">
+														{sec6Points.map((p, i) => (
+                                                            <li key={i} className="flex items-start gap-2">
+                                                                <CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" />
+                                                                <span className="text-[15px] text-neutral-800 leading-7">{p}</span>
+															</li>
+														))}
+													</ul>
+												) : null}
 							</section>
 						) : null}
 
@@ -222,13 +237,16 @@ export default async function VisitVisaDetailPage(props: { params: Promise<{ slu
 										<Image src={sec7Image} alt={sec7Heading || title} width={1200} height={600} className="w-full h-auto object-cover" />
 									</div>
 								) : null}
-								{sec7Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec7Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
+												{sec7Points.length ? (
+                                                    <ul className="mt-5 space-y-3">
+														{sec7Points.map((p, i) => (
+                                                            <li key={i} className="flex items-start gap-2">
+                                                                <CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" />
+                                                                <span className="text-[15px] text-neutral-800 leading-7">{p}</span>
+															</li>
+														))}
+													</ul>
+												) : null}
 							</section>
 						) : null}
 
