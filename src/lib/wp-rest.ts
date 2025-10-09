@@ -43,12 +43,27 @@ function getWpRestBase(): string | null {
 export function normalizeWpLink(href?: string): string | undefined {
 	if (!href) return undefined
 	try {
+		// Handle localhost URLs: convert to relative paths
+		if (href.includes('localhost:3000') || href.includes('localhost:3002')) {
+			const url = new URL(href)
+			return url.pathname.replace(/\/$/, '') || '/'
+		}
+		
+		// Handle port mismatch: if the link points to gai.local:3000, convert to relative path
+		if (href.includes('gai.local:3000')) {
+			const url = new URL(href)
+			return url.pathname.replace(/\/$/, '') || '/'
+		}
+		
 		const restBase = getWpRestBase()
 		if (restBase) {
 			const origin = new URL(restBase).origin
 			const url = new URL(href, origin)
 			// If link starts with WP site origin, convert to pathname
-			if (url.origin === origin) return url.pathname.replace(/\/$/, '') || '/'
+			if (url.origin === origin) {
+				return url.pathname.replace(/\/$/, '') || '/'
+			}
+			
 			return url.toString()
 		}
 		return href

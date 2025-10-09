@@ -36,38 +36,38 @@ export default function Assessment({ subheading, heading, description, highlight
 					) : null}
 				</div>
 				<div>
-					<form onSubmit={onSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-lg border p-5 bg-white">
-						<label className="flex flex-col gap-1 text-sm">
+					<form onSubmit={onSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-lg border p-5 bg-white" autoComplete="off" suppressHydrationWarning data-lpignore="true" data-1p-ignore="true">
+						<label className="flex flex-col gap-1 text-sm" suppressHydrationWarning>
 							<span>Full Name*</span>
-							<input required name="fullName" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" />
+							<input required name="fullName" autoComplete="name" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" data-lpignore="true" data-1p-ignore="true" />
 						</label>
-						<label className="flex flex-col gap-1 text-sm">
+						<label className="flex flex-col gap-1 text-sm" suppressHydrationWarning>
 							<span>Phone Number*</span>
-							<input required type="tel" name="phone" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" />
+							<input required type="tel" name="phone" autoComplete="tel" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" data-lpignore="true" data-1p-ignore="true" />
 						</label>
-						<label className="flex flex-col gap-1 text-sm">
+						<label className="flex flex-col gap-1 text-sm" suppressHydrationWarning>
 							<span>Email*</span>
-							<input required type="email" name="email" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" />
+							<input required type="email" name="email" autoComplete="email" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" data-lpignore="true" data-1p-ignore="true" />
 						</label>
-						<label className="flex flex-col gap-1 text-sm">
+						<label className="flex flex-col gap-1 text-sm" suppressHydrationWarning>
 							<span>Country/Region*</span>
-							<input required name="country" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" />
+							<input required name="country" autoComplete="country-name" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" data-lpignore="true" data-1p-ignore="true" />
 						</label>
-						<label className="flex flex-col gap-1 text-sm">
+						<label className="flex flex-col gap-1 text-sm" suppressHydrationWarning>
 							<span>Occupation*</span>
-							<input required name="occupation" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" />
+							<input required name="occupation" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" data-lpignore="true" data-1p-ignore="true" />
 						</label>
-						<label className="flex flex-col gap-1 text-sm">
+						<label className="flex flex-col gap-1 text-sm" suppressHydrationWarning>
 							<span>Education Level*</span>
-							<input required name="education" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" />
+							<input required name="education" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" data-lpignore="true" data-1p-ignore="true" />
 						</label>
-						<label className="flex flex-col gap-1 text-sm">
+						<label className="flex flex-col gap-1 text-sm" suppressHydrationWarning>
 							<span>Destination*</span>
-							<input required name="destination" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" />
+							<input required name="destination" className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" data-lpignore="true" data-1p-ignore="true" />
 						</label>
-						<label className="sm:col-span-2 flex flex-col gap-1 text-sm">
+						<label className="sm:col-span-2 flex flex-col gap-1 text-sm" suppressHydrationWarning>
 							<span>Additional Comments</span>
-							<textarea name="comments" rows={4} className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" />
+							<textarea name="comments" rows={4} className="rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-[#2dc0d9]" data-lpignore="true" data-1p-ignore="true" />
 						</label>
 						<div className="sm:col-span-2 flex flex-col gap-2">
 							<button disabled={isSubmitting} className="inline-flex items-center justify-center rounded-md bg-[#283277] px-5 py-3 text-white text-sm font-medium disabled:opacity-70">
