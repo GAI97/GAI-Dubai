@@ -1,4 +1,4 @@
-import { fetchWorkPermitBySlug, fetchWorkPermits } from "@/lib/wp-rest"
+import { fetchWorkPermitBySlug, fetchWorkPermits, normalizeWpMediaUrl } from "@/lib/wp-rest"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -27,34 +27,10 @@ export default async function WorkPermitDetail(props: { params: Promise<{ slug: 
 	const title = (acf?.service_name as string) || item.title?.rendered || "Work Permit"
 	const subheading = (acf?.service_subheading as string) || ""
 	const description = (acf?.service_description as string) || ""
-	const heroImg = acf?.service_image?.url as string | undefined
+	const heroImg = normalizeWpMediaUrl((acf?.banner_image?.url as string) || undefined)
 
-	const sec2Heading = (acf?.["2nd_section_heading"] as string) || ""
-	const sec2Points = getArray(acf, "2nd_section_points").map((p) => String(p?.["2nd_section_bullet_points"] || "")).filter(Boolean)
-
-	const sec3Heading = (acf?.["3rd_section_heading"] as string) || ""
-	const sec3Description = (acf?.["3rd_section_description"] as string) || ""
-	const sec3Points = getArray(acf, "3rd_section_points").map((p) => String(p?.["3rd_section_bullet_points"] || "")).filter(Boolean)
-	const sec3Image = (acf?.["3rd_section_images"]?.url as string) || undefined
-
-	const sec4Heading = (acf?.["4th_section_heading"] as string) || ""
-	const sec4Points = getArray(acf, "4th_section_points").map((p) => ({
-		label: String(p?.["4th_section_points"] || ""),
-		desc: String(p?.["4th_section_point_description"] || ""),
-	})).filter((x) => x.label || x.desc)
-
-	const sec5Heading = (acf?.["5th_section_heading"] as string) || ""
-	const sec5Blocks = getArray(acf, "5th_section_points").map((blk) => ({
-		heading: String(blk?.["5th_section_bullet_heading"] || ""),
-		items: getArray(blk, "5th_section_bullet_points").map((i) => String(i?.["5th_sec_bullet_points"] || "")).filter(Boolean),
-	})).filter((b) => b.heading || b.items?.length)
-
-	const sec6Heading = (acf?.["6th_section_heading"] as string) || ""
-	const sec6Points = getArray(acf, "6th_section_points").map((p) => String(p?.["6th_section_bullet_points"] || "")).filter(Boolean)
-
-	const sec7Heading = (acf?.["7th_section_heading"] as string) || ""
-	const sec7Points = getArray(acf, "7th_section_points").map((p) => String(p?.["7th_section_bullet_points"] || "")).filter(Boolean)
-	const sec7Image = (acf?.["7th_section_image"]?.url as string) || undefined
+	// New section_points structure
+	const sectionPoints = getArray(acf, "section_points")
 
 	const finalHeading = (acf?.["final_section_heading"] as string) || ""
 	const finalDescription = (acf?.["final_section_description"] as string) || ""
@@ -63,7 +39,7 @@ export default async function WorkPermitDetail(props: { params: Promise<{ slug: 
 	const btn2Text = (acf?.["button_2_text"] as string) || ""
 	const btn2Link = (acf?.["button_2_link"]?.url as string) || "#"
 
-	const leftSidebarImage = (acf?.["left_side_bar_image"]?.url as string) || undefined
+	const leftSidebarImage = normalizeWpMediaUrl((acf?.["left_side_bar_image"]?.url as string) || undefined)
 
 	return (
 		<>
@@ -113,108 +89,41 @@ export default async function WorkPermitDetail(props: { params: Promise<{ slug: 
 					</aside>
 
 					<article className="md:col-span-8">
-						{sec2Heading || sec2Points.length ? (
-							<section className="mt-2">
-								<h2 className="text-3xl sm:text-4xl font-semibold text-[#283277]">{sec2Heading || "Overview"}</h2>
-								{sec2Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec2Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
-							</section>
-						) : null}
-
-						{sec3Heading || sec3Description || sec3Points.length || sec3Image ? (
-							<section className="mt-10">
-								<h2 className="text-3xl sm:text-4xl font-semibold text-[#283277]">{sec3Heading}</h2>
-								{sec3Image ? (
-									<div className="mt-5 overflow-hidden rounded-lg ring-1 ring-black/5 w-full">
-										<Image src={sec3Image} alt={sec3Heading || title} width={1200} height={600} className="w-full h-auto object-cover" />
-									</div>
-								) : null}
-								{sec3Description ? (
-									<p className="mt-3 text-[15px] leading-7 text-neutral-700 whitespace-pre-line">{sec3Description}</p>
-								) : null}
-								{sec3Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec3Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
-							</section>
-						) : null}
-
-						{sec4Heading || sec4Points.length ? (
-							<section className="mt-10">
-								<h2 className="text-3xl sm:text-4xl font-semibold text-[#283277]">{sec4Heading}</h2>
-								{sec4Points.length ? (
-									<div className="mt-5 grid grid-cols-1 gap-4">
-										{sec4Points.map((p, i) => (
-											<div key={i} className="rounded-lg border border-black/10 p-4">
-												<div className="font-medium text-neutral-900">{p.label}</div>
-												{p.desc ? <p className="mt-2 text-[15px] leading-7 text-neutral-700 whitespace-pre-line">{p.desc}</p> : null}
+						{sectionPoints.map((section, index) => {
+							const layout = section?.acf_fc_layout || ""
+							const heading = section?.section_heading || ""
+							const content = section?.content || ""
+							const sectionImage = section?.section_image
+							const imageUrl = sectionImage && sectionImage !== false ? normalizeWpMediaUrl(sectionImage?.url) : null
+							
+							if (!heading && !content) return null
+							
+							return (
+								<section key={index} className={index === 0 ? "mt-2" : "mt-8"}>
+									{heading && (
+										<h2 className="text-3xl sm:text-4xl font-semibold text-[#283277] mb-4">{heading}</h2>
+									)}
+									<div className="rounded-lg bg-[#f6fbff] p-6 ring-1 ring-[#2dc0d9]/20">
+										{imageUrl && (
+											<div className="mb-6 overflow-hidden rounded-lg ring-1 ring-black/5 w-full">
+												<Image src={imageUrl} alt={heading || title} width={1200} height={600} className="w-full h-auto object-cover" />
 											</div>
-										))}
+										)}
+										{content && (
+											<div 
+												className="text-[15px] leading-7 text-neutral-700 prose prose-sm max-w-none prose-strong:text-[#283277] prose-strong:font-semibold prose-p:mb-4"
+												dangerouslySetInnerHTML={{ 
+													__html: content
+														.replace(/<ul[^>]*>/g, '<ul class="space-y-3">')
+														.replace(/<li[^>]*>/g, '<li class="flex items-start gap-2"><svg class="h-4 w-4 mt-[2px] text-[#2dc0d9] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="text-[15px] text-neutral-800 leading-7">')
+														.replace(/<\/li>/g, '</span></li>')
+												}}
+											/>
+										)}
 									</div>
-								) : null}
-							</section>
-						) : null}
-
-						{sec5Heading || sec5Blocks.length ? (
-							<section className="mt-10">
-								<h2 className="text-3xl sm:text-4xl font-semibold text-[#283277]">{sec5Heading}</h2>
-								{sec5Blocks.length ? (
-									<div className="mt-5 space-y-6">
-										{sec5Blocks.map((blk, idx) => (
-											<div key={idx}>
-												{blk.heading ? <div className="font-semibold text-neutral-900">{blk.heading}</div> : null}
-												{blk.items?.length ? (
-													<ul className="mt-3 space-y-2 text-[15px] text-neutral-800">
-														{blk.items.map((txt, j) => (
-															<li key={j} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{txt}</span></li>
-														))}
-													</ul>
-												) : null}
-											</div>
-										))}
-									</div>
-								) : null}
-							</section>
-						) : null}
-
-						{sec6Heading || sec6Points.length ? (
-							<section className="mt-10">
-								<h2 className="text-3xl sm:text-4xl font-semibold text-[#283277]">{sec6Heading}</h2>
-								{sec6Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec6Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
-							</section>
-						) : null}
-
-						{sec7Heading || sec7Points.length || sec7Image ? (
-							<section className="mt-10">
-								{sec7Heading ? <h2 className="text-3xl sm:text-4xl font-semibold text-[#283277]">{sec7Heading}</h2> : null}
-								{sec7Image ? (
-									<div className="mt-5 overflow-hidden rounded-lg ring-1 ring-black/5 w-full">
-										<Image src={sec7Image} alt={sec7Heading || title} width={1200} height={600} className="w-full h-auto object-cover" />
-									</div>
-								) : null}
-								{sec7Points.length ? (
-									<ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-										{sec7Points.map((p, i) => (
-											<li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-										))}
-									</ul>
-								) : null}
-							</section>
-						) : null}
+								</section>
+							)
+						})}
 
 						{finalHeading || finalDescription || btn1Text || btn2Text ? (
 							<section className="mt-12 rounded-lg bg-[#f6fbff] p-6 ring-1 ring-[#2dc0d9]/20">
