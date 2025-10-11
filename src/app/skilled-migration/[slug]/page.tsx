@@ -1,4 +1,4 @@
-import { fetchSkilledMigrationBySlug, fetchSkilledMigrations } from "@/lib/wp-rest"
+import { fetchSkilledMigrationBySlug, fetchSkilledMigrations, normalizeWpMediaUrl } from "@/lib/wp-rest"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -27,27 +27,9 @@ export default async function SkilledMigrationDetail(props: { params: Promise<{ 
 	const title = (acf?.service_name as string) || item.title?.rendered || "Skilled Migration"
 	const subheading = (acf?.service_subheading as string) || ""
 	const description = (acf?.service_description as string) || ""
-	const heroImg = acf?.service_image?.url as string | undefined
+	const heroImg = normalizeWpMediaUrl((acf?.banner_image?.url as string) || undefined)
 
-	const sec2Heading = (acf?.["2nd_section_heading"] as string) || ""
-	const sec2Points = getArray(acf, "2nd_section_points").map((p) => String(p?.["2nd_section_bullet_points"] || "")).filter(Boolean)
-
-	const sec3Heading = (acf?.["3rd_section_heading"] as string) || ""
-	const sec3Image = (acf?.["3rd_section_images"]?.url as string) || undefined
-	const sec3Categories = getArray(acf, "3rd_section_categories")
-
-	const sec4Heading = (acf?.["4th_section_heading"] as string) || ""
-	const sec4Points = getArray(acf, "4th_section_points").map((p) => String(p?.["4th_section_points"] || "")).filter(Boolean)
-
-	const sec5Heading = (acf?.["5th_section_heading"] as string) || ""
-	const sec5Points = getArray(acf, "5th_section_points").map((p) => String(p?.["5th_section_bullet_points"] || "")).filter(Boolean)
-
-	const sec6Heading = (acf?.["6th_section_heading"] as string) || ""
-	const sec6Points = getArray(acf, "6th_section_points").map((p) => String(p?.["6th_section_bullet_points"] || "")).filter(Boolean)
-
-	const sec7Heading = (acf?.["7th_section_heading"] as string) || ""
-	const sec7Points = getArray(acf, "7th_section_points").map((p) => String(p?.["7th_section_bullet_points"] || "")).filter(Boolean)
-	const sec7Image = (acf?.["7th_section_image"]?.url as string) || undefined
+	const sectionPoints = getArray(acf, "section_points")
 
 	const finalHeading = (acf?.["final_section_heading"] as string) || ""
 	const finalDescription = (acf?.["final_section_description"] as string) || ""
@@ -112,156 +94,44 @@ export default async function SkilledMigrationDetail(props: { params: Promise<{ 
 						)}
 					</aside>
 
-					<main className="md:col-span-8">
-						{sec2Heading && (
-							<section className="mb-8">
-								<h2 className="text-2xl sm:text-3xl font-semibold text-[#283277] mb-4">{sec2Heading}</h2>
-								{sec2Points.length > 0 && (
-									<ul className="space-y-2">
-										{sec2Points.map((point, i) => (
-											<li key={i} className="flex items-start gap-3">
-												<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-												<span className="text-[15px] text-neutral-700">{point}</span>
-											</li>
-										))}
-									</ul>
-								)}
-							</section>
-						)}
-
-						{sec3Heading && (
-							<section className="mb-8">
-								<h2 className="text-2xl sm:text-3xl font-semibold text-[#283277] mb-4">{sec3Heading}</h2>
-								
-								{sec3Image && (
-									<div className="mb-6">
-										<Image
-											src={sec3Image}
-											alt="Section 3 Image"
-											width={860}
-											height={312}
-											className="w-full rounded-lg"
-										/>
-									</div>
-								)}
-
-								{sec3Categories.length > 0 && (
-									<div className="space-y-6">
-										{sec3Categories.map((category, categoryIndex) => (
-											<div key={categoryIndex} className="bg-neutral-50 p-6 rounded-lg">
-												<h3 className="text-lg font-semibold text-[#283277] mb-4">
-													{category.category_heading}
-												</h3>
-												
-												{category.category_points && category.category_points.length > 0 && (
-													<ul className="space-y-2 mb-4">
-														{category.category_points.map((point: any, pointIndex: number) => (
-															<li key={pointIndex} className="flex items-start gap-3">
-																<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-																<span className="text-[15px] text-neutral-700">{point.category_bullet_points}</span>
-															</li>
-														))}
-													</ul>
-												)}
-
-												{category.category_heading_2 && (
-													<div className="mt-4">
-														<h4 className="text-base font-semibold text-[#283277] mb-3">
-															{category.category_heading_2}
-														</h4>
-														{category.category_2_points && category.category_2_points.length > 0 && (
-															<ul className="space-y-2">
-																{category.category_2_points.map((point: any, pointIndex: number) => (
-																	<li key={pointIndex} className="flex items-start gap-3">
-																		<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-																		<span className="text-[15px] text-neutral-700">{point.category_2_bullet_points}</span>
-																	</li>
-																))}
-															</ul>
-														)}
-													</div>
-												)}
+					<article className="md:col-span-8">
+						{sectionPoints.map((section, index) => {
+							const layout = section?.acf_fc_layout || ""
+							const heading = section?.section_heading || ""
+							const content = section?.content || ""
+							const sectionImage = section?.section_image
+							const imageUrl = sectionImage && sectionImage !== false ? normalizeWpMediaUrl(sectionImage?.url) : null
+							
+							if (!heading && !content) return null
+							
+							return (
+								<section key={index} className={index === 0 ? "mt-2" : "mt-8"}>
+									{heading && (
+										<h2 className="text-3xl sm:text-4xl font-semibold text-[#283277] mb-4">{heading}</h2>
+									)}
+									<div className="rounded-lg bg-[#f6fbff] p-6 ring-1 ring-[#2dc0d9]/20">
+										{imageUrl && (
+											<div className="mb-6 overflow-hidden rounded-lg ring-1 ring-black/5 w-full">
+												<Image src={imageUrl} alt={heading || title} width={1200} height={600} className="w-full h-auto object-cover" />
 											</div>
-										))}
+										)}
+										{content && (
+											<div 
+												className="text-[15px] leading-7 text-neutral-700 prose prose-sm max-w-none prose-strong:text-[#283277] prose-strong:font-semibold prose-p:mb-4 prose-ol:list-decimal prose-ol:pl-6 prose-ul:list-disc prose-ul:pl-6"
+												dangerouslySetInnerHTML={{ 
+													__html: content
+														.replace(/<ul[^>]*>/g, '<ul class="space-y-3">')
+														.replace(/<li[^>]*>/g, '<li class="flex items-start gap-2"><svg class="h-4 w-4 mt-[2px] text-[#2dc0d9] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="text-[15px] text-neutral-800 leading-7">')
+														.replace(/<\/li>/g, '</span></li>')
+														.replace(/<ol[^>]*>/g, '<ol class="space-y-3 list-decimal pl-6">')
+														.replace(/<ol[^>]*>/g, '<ol class="space-y-3 list-decimal pl-6">')
+												}}
+											/>
+										)}
 									</div>
-								)}
-							</section>
-						)}
-
-						{sec4Heading && (
-							<section className="mb-8">
-								<h2 className="text-2xl sm:text-3xl font-semibold text-[#283277] mb-4">{sec4Heading}</h2>
-								{sec4Points.length > 0 && (
-									<ul className="space-y-2">
-										{sec4Points.map((point, i) => (
-											<li key={i} className="flex items-start gap-3">
-												<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-												<span className="text-[15px] text-neutral-700">{point}</span>
-											</li>
-										))}
-									</ul>
-								)}
-							</section>
-						)}
-
-						{sec5Heading && (
-							<section className="mb-8">
-								<h2 className="text-2xl sm:text-3xl font-semibold text-[#283277] mb-4">{sec5Heading}</h2>
-								{sec5Points.length > 0 && (
-									<ul className="space-y-2">
-										{sec5Points.map((point, i) => (
-											<li key={i} className="flex items-start gap-3">
-												<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-												<span className="text-[15px] text-neutral-700">{point}</span>
-											</li>
-										))}
-									</ul>
-								)}
-							</section>
-						)}
-
-						{sec6Heading && (
-							<section className="mb-8">
-								<h2 className="text-2xl sm:text-3xl font-semibold text-[#283277] mb-4">{sec6Heading}</h2>
-								{sec6Points.length > 0 && (
-									<ul className="space-y-2">
-										{sec6Points.map((point, i) => (
-											<li key={i} className="flex items-start gap-3">
-												<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-												<span className="text-[15px] text-neutral-700">{point}</span>
-											</li>
-										))}
-									</ul>
-								)}
-							</section>
-						)}
-
-						{sec7Heading && (
-							<section className="mb-8">
-								{sec7Image && (
-									<div className="mb-6">
-										<Image
-											src={sec7Image}
-											alt="Section 7 Image"
-											width={800}
-											height={400}
-											className="w-full rounded-lg"
-										/>
-									</div>
-								)}
-								<h2 className="text-2xl sm:text-3xl font-semibold text-[#283277] mb-4">{sec7Heading}</h2>
-								{sec7Points.length > 0 && (
-									<ul className="space-y-2">
-										{sec7Points.map((point, i) => (
-											<li key={i} className="flex items-start gap-3">
-												<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-												<span className="text-[15px] text-neutral-700">{point}</span>
-											</li>
-										))}
-									</ul>
-								)}
-							</section>
-						)}
+								</section>
+							)
+						})}
 
 						{/* Final CTA */}
 						{finalHeading || finalDescription || btn1Text || btn2Text ? (
@@ -284,7 +154,7 @@ export default async function SkilledMigrationDetail(props: { params: Promise<{ 
 								</div>
 							</section>
 						) : null}
-					</main>
+					</article>
 				</div>
 			</section>
 		</>

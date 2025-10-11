@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { fetchJobSeekerVisas } from "@/lib/wp-rest"
+import { fetchJobSeekerVisas, normalizeWpMediaUrl } from "@/lib/wp-rest"
 
 export const dynamic = "force-dynamic"
 
@@ -20,8 +20,8 @@ export default async function JobSeekerVisaIndexPage() {
 						const acf: any = (it as any)?.acf || {}
 						const title = (acf?.service_name as string) || it.title?.rendered || "Job Seeker Visa"
 						const subheading = (acf?.service_subheading as string) || ""
-                        // Prefer banner_image for background; fallback to service_image
-                        const img = (acf?.banner_image?.url as string) || (acf?.service_image?.url as string) || undefined
+                        // Use service_image for job seeker visa cards
+                        const img = normalizeWpMediaUrl((acf?.service_image?.url as string) || undefined)
 						return (
 							<Link href={`/job-seeker-visa/${it.slug}`} key={it.id} className="w-full max-w-[360px] mx-auto rounded-lg overflow-hidden flex flex-col relative group cursor-pointer hover:scale-105 transition-transform duration-300">
 								{/* Background Image with Dark Overlay */}
