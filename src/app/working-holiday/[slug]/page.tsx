@@ -1,9 +1,7 @@
-import { fetchWorkingHolidayVisaBySlug, fetchWorkingHolidayVisas } from "@/lib/wp-rest"
+import { fetchWorkingHolidayVisaBySlug, fetchWorkingHolidayVisas, normalizeWpMediaUrl } from "@/lib/wp-rest"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { CheckCircle } from "lucide-react"
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 
 export const dynamic = "force-dynamic"
 
@@ -11,7 +9,7 @@ export async function generateStaticParams() {
   return []
 }
 
-function getAcfArray(acf: Record<string, any>, key: string): any[] {
+function getArray(acf: Record<string, any>, key: string): any[] {
   const v = acf?.[key]
   return Array.isArray(v) ? v : []
 }
@@ -28,31 +26,8 @@ export default async function WorkingHolidayDetailPage(props: { params: Promise<
   const title = (acf?.service_name as string) || item.title?.rendered || "Working Holiday"
   const subheading = (acf?.service_subheading as string) || ""
   const description = (acf?.service_description as string) || ""
-  const heroImg = (acf?.banner_image?.url as string) || (acf?.service_image?.url as string) || undefined
-
-  const sec2Heading = (acf?.["2nd_section_heading"] as string) || ""
-  const sec2Description = (acf?.["2nd_section_description"] as string) || ""
-  const sec2Points = getAcfArray(acf, "2nd_section_points").map((p) => String(p?.["2nd_section_bullet_points"] || "")).filter(Boolean)
-
-  const sec3Heading = (acf?.["3rd_section_heading"] as string) || ""
-  const sec3Points = getAcfArray(acf, "3rd_section_points").map((p) => String(p?.["3rd_section_bullet_points"] || "")).filter(Boolean)
-  const sec3Image = (acf?.["3rd_section_images"]?.url as string) || undefined
-
-  const sec4Heading = (acf?.["4th_section_heading"] as string) || ""
-  const sec4Description = (acf?.["4th_section_description"] as string) || ""
-  const sec4Points = getAcfArray(acf, "4th_section_points").map((p) => String(p?.["4th_section_bullet_points"] || "")).filter(Boolean)
-
-  const sec5Heading = (acf?.["5th_section_heading"] as string) || ""
-  const sec5Description = (acf?.["5th_section_description"] as string) || ""
-  const sec5Points = getAcfArray(acf, "5th_section_points").map((p) => String(p?.["5th_section_bullet_points"] || "")).filter(Boolean)
-
-  const sec6Heading = (acf?.["6th_section_heading"] as string) || ""
-  const sec6Description = (acf?.["6th_section_description"] as string) || ""
-  const sec6Points = getAcfArray(acf, "6th_section_points").map((p) => String(p?.["6th_section_bullet_points"] || "")).filter(Boolean)
-
-  const sec7Heading = (acf?.["7th_section_heading"] as string) || ""
-  const sec7Points = getAcfArray(acf, "7th_section_points").map((p) => String(p?.["7th_section_bullet_points"] || "")).filter(Boolean)
-  const sec7Image = (acf?.["7th_section_image"]?.url as string) || undefined
+  const heroImg = normalizeWpMediaUrl((acf?.banner_image?.url as string) || undefined)
+  const sectionPoints = getArray(acf, "section_points")
 
   const finalHeading = (acf?.["final_section_heading"] as string) || ""
   const finalDescription = (acf?.["final_section_description"] as string) || ""
@@ -61,7 +36,7 @@ export default async function WorkingHolidayDetailPage(props: { params: Promise<
   const btn2Text = (acf?.["button_2_text"] as string) || ""
   const btn2Link = (acf?.["button_2_link"]?.url as string) || "#"
 
-  const leftSidebarImage = (acf?.["left_side_bar_image"]?.url as string) || undefined
+  const leftSidebarImage = normalizeWpMediaUrl((acf?.["left_side_bar_image"]?.url as string) || undefined)
 
   return (
     <>
@@ -117,46 +92,90 @@ export default async function WorkingHolidayDetailPage(props: { params: Promise<
             ) : null}
           </aside>
 
-          {/* Right content - reuse same sections as Visit Visa, driven by ACF keys */}
+          {/* Right content */}
           <article className="md:col-span-8">
-            {[{h:sec2Heading,d:sec2Description,p:sec2Points,tag:"Overview"},{h:sec3Heading,i:sec3Image,p:sec3Points},{h:sec4Heading,d:sec4Description,p:sec4Points},{h:sec5Heading,d:sec5Description,p:sec5Points},{h:sec6Heading,d:sec6Description,p:sec6Points}].map((sec, idx) => (
-              (sec.h || sec.d || (sec.p && sec.p.length) || sec.i) ? (
-                <section key={idx} className="mt-10">
-                  {sec.h ? <h2 className="text-3xl sm:text-4xl font-semibold text-[#283277]">{sec.h || (idx===0?sec.tag:"")}</h2> : null}
-                  {sec.i ? (
-                    <div className="mt-5 overflow-hidden rounded-lg ring-1 ring-black/5 w-full">
-                      <Image src={sec.i} alt={String(sec.h || title)} width={1200} height={600} className="w-full h-auto object-cover" />
-                    </div>
-                  ) : null}
-                  {sec.d ? <p className="mt-3 text-[15px] leading-7 text-neutral-700 whitespace-pre-line">{sec.d}</p> : null}
-                  {sec.p && sec.p.length ? (
-                    <ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-                      {sec.p.map((p: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-                      ))}
-                    </ul>
-                  ) : null}
-                </section>
-              ) : null
-            ))}
+            {sectionPoints.map((section: any, index: number) => {
+              const heading = section?.section_heading || ""
+              const content = section?.contents || ""
+              const imageUrl = section?.image ? normalizeWpMediaUrl(section.image.url) : undefined
 
-            {(sec7Heading || sec7Points.length || sec7Image) ? (
-              <section className="mt-10">
-                {sec7Heading ? <h2 className="text-3xl sm:text-4xl font-semibold text-[#283277]">{sec7Heading}</h2> : null}
-                {sec7Image ? (
-                  <div className="mt-5 overflow-hidden rounded-lg ring-1 ring-black/5 w-full">
-                    <Image src={sec7Image} alt={sec7Heading || title} width={1200} height={600} className="w-full h-auto object-cover" />
+              return (
+                <section key={index} className={`${index === 0 ? "mt-2" : "mt-8"}`}>
+                  {heading && (
+                    <h2 className="text-3xl sm:text-4xl font-semibold text-[#283277] mb-4">{heading}</h2>
+                  )}
+                  <div className="rounded-lg bg-[#f6fbff] p-6 ring-1 ring-[#2dc0d9]/20">
+                    {imageUrl && (
+                      <div className="mb-6 overflow-hidden rounded-lg ring-1 ring-black/5 w-full">
+                        <Image src={imageUrl} alt={heading || title} width={1200} height={600} className="w-full h-auto object-cover" />
+                      </div>
+                    )}
+                    {content && (
+                      <div
+                        className="text-[15px] leading-7 text-neutral-700 prose prose-sm max-w-none prose-strong:text-[#283277] prose-strong:font-semibold prose-p:mb-4 prose-ol:list-decimal prose-ol:pl-6 prose-ul:list-disc prose-ul:pl-6"
+                        dangerouslySetInnerHTML={{
+                          __html: content
+                            // Convert ul to ol for Application Process sections
+                            .replace(/<ul[^>]*>/g, (match) => {
+                              // Check if this is in an Application Process section
+                              const isApplicationProcess = heading && (
+                                heading.toLowerCase().includes('application process') ||
+                                heading.toLowerCase().includes('process') ||
+                                heading.toLowerCase().includes('steps') ||
+                                heading.toLowerCase().includes('procedure')
+                              )
+                              if (isApplicationProcess) {
+                                return '<ol class="space-y-3 list-decimal pl-6" style="list-style-type: decimal; padding-left: 1.5rem;">'
+                              }
+                              return '<ul class="space-y-3">'
+                            })
+                            // Also handle existing ol tags in Application Process sections
+                            .replace(/<ol[^>]*>/g, (match) => {
+                              // Check if this is in an Application Process section
+                              const isApplicationProcess = heading && (
+                                heading.toLowerCase().includes('application process') ||
+                                heading.toLowerCase().includes('process') ||
+                                heading.toLowerCase().includes('steps') ||
+                                heading.toLowerCase().includes('procedure')
+                              )
+                              if (isApplicationProcess) {
+                                return '<ol class="space-y-3 list-decimal pl-6" style="list-style-type: decimal; padding-left: 1.5rem;">'
+                              }
+                              return match
+                            })
+                            .replace(/<li[^>]*>/g, (liMatch) => {
+                              // Check if this is in an Application Process section
+                              const isApplicationProcess = heading && (
+                                heading.toLowerCase().includes('application process') ||
+                                heading.toLowerCase().includes('process') ||
+                                heading.toLowerCase().includes('steps') ||
+                                heading.toLowerCase().includes('procedure')
+                              )
+                              if (isApplicationProcess) {
+                                return '<li class="text-[15px] text-neutral-800 leading-7">'
+                              }
+                              return '<li class="flex items-start gap-2"><svg class="h-4 w-4 mt-[2px] text-[#2dc0d9] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="text-[15px] text-neutral-800 leading-7">'
+                            })
+                            .replace(/<\/li>/g, (liCloseMatch) => {
+                              // Check if this is in an Application Process section
+                              const isApplicationProcess = heading && (
+                                heading.toLowerCase().includes('application process') ||
+                                heading.toLowerCase().includes('process') ||
+                                heading.toLowerCase().includes('steps') ||
+                                heading.toLowerCase().includes('procedure')
+                              )
+                              if (isApplicationProcess) {
+                                return '</li>'
+                              }
+                              return '</span></li>'
+                            })
+                        }}
+                      />
+                    )}
                   </div>
-                ) : null}
-                {sec7Points.length ? (
-                  <ul className="mt-5 space-y-3 text-[15px] text-neutral-800">
-                    {sec7Points.map((p, i) => (
-                      <li key={i} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-[2px] text-[#2dc0d9]" /><span>{p}</span></li>
-                    ))}
-                  </ul>
-                ) : null}
-              </section>
-            ) : null}
+                </section>
+              )
+            })}
 
             {(finalHeading || finalDescription || btn1Text || btn2Text) ? (
               <section className="mt-12 rounded-lg bg-[#f6fbff] p-6 ring-1 ring-[#2dc0d9]/20">
@@ -184,6 +203,3 @@ export default async function WorkingHolidayDetailPage(props: { params: Promise<
     </>
   )
 }
-
-
-

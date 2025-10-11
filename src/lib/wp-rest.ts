@@ -797,3 +797,4 @@ export async function fetchFooter(): Promise<RestFooter | null> {
 		return null
 	}
 }
+
