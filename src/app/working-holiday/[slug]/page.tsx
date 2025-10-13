@@ -116,7 +116,7 @@ export default async function WorkingHolidayDetailPage(props: { params: Promise<
                         dangerouslySetInnerHTML={{
                           __html: content
                             // Convert ul to ol for Application Process sections
-                            .replace(/<ul[^>]*>/g, (match) => {
+                            .replace(/<ul[^>]*>/g, (_match: string) => {
                               // Check if this is in an Application Process section
                               const isApplicationProcess = heading && (
                                 heading.toLowerCase().includes('application process') ||
@@ -130,7 +130,7 @@ export default async function WorkingHolidayDetailPage(props: { params: Promise<
                               return '<ul class="space-y-3">'
                             })
                             // Also handle existing ol tags in Application Process sections
-                            .replace(/<ol[^>]*>/g, (match) => {
+                            .replace(/<ol[^>]*>/g, (_match: string) => {
                               // Check if this is in an Application Process section
                               const isApplicationProcess = heading && (
                                 heading.toLowerCase().includes('application process') ||
@@ -141,9 +141,9 @@ export default async function WorkingHolidayDetailPage(props: { params: Promise<
                               if (isApplicationProcess) {
                                 return '<ol class="space-y-3 list-decimal pl-6" style="list-style-type: decimal; padding-left: 1.5rem;">'
                               }
-                              return match
+                              return _match
                             })
-                            .replace(/<li[^>]*>/g, (liMatch) => {
+                            .replace(/<li[^>]*>/g, (_liMatch: string) => {
                               // Check if this is in an Application Process section
                               const isApplicationProcess = heading && (
                                 heading.toLowerCase().includes('application process') ||
@@ -156,7 +156,7 @@ export default async function WorkingHolidayDetailPage(props: { params: Promise<
                               }
                               return '<li class="flex items-start gap-2"><svg class="h-4 w-4 mt-[2px] text-[#2dc0d9] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="text-[15px] text-neutral-800 leading-7">'
                             })
-                            .replace(/<\/li>/g, (liCloseMatch) => {
+                            .replace(/<\/li>/g, (_liCloseMatch: string) => {
                               // Check if this is in an Application Process section
                               const isApplicationProcess = heading && (
                                 heading.toLowerCase().includes('application process') ||
