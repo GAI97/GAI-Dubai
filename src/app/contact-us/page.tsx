@@ -5,6 +5,14 @@ import { CheckCircle, MapPin, Phone, Mail, Clock, MessageCircle, Facebook, Insta
 
 export const dynamic = "force-dynamic"
 
+function WhatsappIcon(props: { className?: string }) {
+    return (
+        <svg className={props.className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.04 2C6.57 2 2.13 6.44 2.13 11.91c0 2.09.66 4.03 1.78 5.61L2 22l4.61-1.84a9.86 9.86 0 0 0 5.43 1.59h.01c5.47 0 9.91-4.44 9.91-9.91C22 6.44 17.51 2 12.04 2zm0 17.93h-.01a8 8 0 0 1-4.29-1.26l-.31-.19-2.73 1.09.52-2.83-.2-.29a8 8 0 1 1 7.02 3.48zM16.6 14.3c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.93-1.18-.71-.63-1.19-1.41-1.33-1.65-.14-.24-.02-.38.1-.5.1-.1.24-.26.36-.4.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.79-.2-.48-.4-.42-.54-.42-.14 0-.3-.02-.46-.02-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2 0 1.18.86 2.32.98 2.48.12.16 1.68 2.56 4.06 3.59.57.25 1.02.4 1.37.51.58.18 1.1.16 1.52.1.46-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/>
+        </svg>
+    )
+}
+
 function getArray(acf: Record<string, any>, key: string): any[] {
 	const v = acf?.[key]
 	return Array.isArray(v) ? v : []
@@ -27,6 +35,7 @@ export default async function ContactUsPage() {
 	const phoneHeading = acf?.phone_heading || "Phone / WhatsApp"
 	const phoneNumber = acf?.phone_number || ""
 	const phoneLink = acf?.number_link?.url || "#"
+	const whatsappLink: string | undefined = acf?.whatsapp_link?.url || acf?.whatsapp?.url || (typeof phoneLink === 'string' && (phoneLink.includes('wa.me') || phoneLink.includes('whatsapp')) ? phoneLink : undefined)
 
 	const emailHeading = acf?.email_heading || "Email"
 	const emailAddress = acf?.email_address || ""
@@ -42,6 +51,8 @@ export default async function ContactUsPage() {
 	const socialAccounts = getArray(acf, "social_media_accounts")
 
 	const liveSupportText = acf?.live_support_text || ""
+	const liveSupportLink: string | undefined = acf?.live_support_link?.url || acf?.live_support?.url || undefined
+	const liveSupportCta: string = acf?.live_support_button_text || "Start Live Support"
 
 	return (
 		<div className="min-h-screen bg-white">
@@ -223,7 +234,7 @@ export default async function ContactUsPage() {
 							</div>
 						</div>
 
-						{/* Phone */}
+					{/* Phone */}
 						<div className="bg-gray-50 rounded-xl p-6">
 							<div className="flex items-start gap-4">
 								<div className="bg-[#2dc0d9] p-3 rounded-lg">
@@ -231,12 +242,23 @@ export default async function ContactUsPage() {
 								</div>
 								<div>
 									<h3 className="text-xl font-semibold text-[#283277] mb-3">{phoneHeading}</h3>
-									<Link
-										href={phoneLink}
-										className="text-lg text-gray-700 hover:text-[#2dc0d9] transition-colors"
-									>
-										{phoneNumber}
-									</Link>
+								<Link
+									href={phoneLink}
+									className="inline-flex items-center gap-2 text-lg text-gray-700 hover:text-[#2dc0d9] transition-colors"
+								>
+									{(typeof phoneLink === 'string' && (phoneLink.includes('wa.me') || phoneLink.includes('whatsapp'))) ? (
+										<WhatsappIcon className="w-5 h-5" />
+									) : null}
+									<span>{phoneNumber}</span>
+								</Link>
+								{whatsappLink && !(typeof phoneLink === 'string' && (phoneLink.includes('wa.me') || phoneLink.includes('whatsapp'))) ? (
+									<div className="mt-3">
+											<Link href={whatsappLink} target="_blank" className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-[#25D366] text-white hover:opacity-90 transition">
+												<WhatsappIcon className="w-4 h-4" />
+											<span>WhatsApp</span>
+										</Link>
+									</div>
+								) : null}
 								</div>
 							</div>
 						</div>
@@ -317,19 +339,33 @@ export default async function ContactUsPage() {
 							</div>
 						)}
 
-						{/* Live Support */}
+					{/* Live Support */}
 						{liveSupportText && (
-							<div className="bg-green-50 rounded-xl p-6 border border-green-200">
-								<div className="flex items-start gap-4">
-									<div className="bg-green-600 p-3 rounded-lg">
-										<MessageCircle className="w-6 h-6 text-white" />
+							liveSupportLink ? (
+								<Link href={liveSupportLink} target="_blank" className="block bg-green-50 rounded-xl p-6 border border-green-200 hover:bg-green-100 transition">
+									<div className="flex items-start gap-4">
+										<div className="bg-green-600 p-3 rounded-lg">
+											<MessageCircle className="w-6 h-6 text-white" />
+										</div>
+										<div>
+											<h3 className="text-xl font-semibold text-[#283277] mb-2">Live Support</h3>
+											<p className="text-gray-700">{liveSupportText}</p>
+										</div>
 									</div>
-									<div>
-										<h3 className="text-xl font-semibold text-[#283277] mb-2">Live Support</h3>
-										<p className="text-gray-700">{liveSupportText}</p>
+								</Link>
+							) : (
+								<div className="bg-green-50 rounded-xl p-6 border border-green-200">
+									<div className="flex items-start gap-4">
+										<div className="bg-green-600 p-3 rounded-lg">
+											<MessageCircle className="w-6 h-6 text-white" />
+										</div>
+										<div>
+											<h3 className="text-xl font-semibold text-[#283277] mb-2">Live Support</h3>
+											<p className="text-gray-700">{liveSupportText}</p>
+										</div>
 									</div>
 								</div>
-							</div>
+							)
 						)}
 					</div>
 				</div>

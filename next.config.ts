@@ -47,6 +47,14 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   // Disable x-powered-by header for security
   poweredByHeader: false,
+  async rewrites() {
+    return [
+      {
+        source: "/favicon.ico",
+        destination: "/api/favicon",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
