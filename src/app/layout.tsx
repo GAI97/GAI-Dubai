@@ -4,6 +4,8 @@ import "./globals.css";
 import TopBarServer from "@/components/TopBarServer";
 import HeaderServer from "@/components/HeaderServer";
 import FooterServer from "@/components/FooterServer";
+import WhatsappFloatingButton from "@/components/WhatsappFloatingButton";
+import { fetchLiveChatLink } from "@/lib/wp-rest";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -46,6 +48,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const liveChatHref = await fetchLiveChatLink();
   // Fetch favicon again to inject explicit <link rel="icon"> tags in <head>
   let headFaviconUrl: string | undefined
   try {
@@ -78,6 +81,7 @@ export default async function RootLayout({
         <HeaderServer />
         {children}
         <FooterServer />
+        <WhatsappFloatingButton href={liveChatHref || undefined} />
       </body>
     </html>
   );

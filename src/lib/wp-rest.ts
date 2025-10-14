@@ -802,3 +802,20 @@ export async function fetchFooter(): Promise<RestFooter | null> {
 	}
 }
 
+// LIVE CHAT (WhatsApp) HELPERS
+export async function fetchLiveChatLink(): Promise<string | null> {
+    const base = getWpRestBase()
+    if (!base) return null
+    const url = `${base}/wp/v2/live-chat?per_page=1&orderby=modified&order=desc`
+    try {
+        const res = await fetch(url, { cache: 'no-store' })
+        if (!res.ok) return null
+        const list = (await res.json()) as Array<{ acf?: any }>
+        const first = Array.isArray(list) ? list[0] : null
+        const href = first?.acf?.link?.url as string | undefined
+        return ensureAbsoluteHttpUrl(href) || null
+    } catch {
+        return null
+    }
+}
+
