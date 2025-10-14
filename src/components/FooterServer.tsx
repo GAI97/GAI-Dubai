@@ -11,6 +11,16 @@ export default async function FooterServer() {
         ...footerData,
         acf: footerData.acf ? {
             ...footerData.acf,
+            social_media_accounts: Array.isArray(footerData.acf.social_media_accounts)
+                ? footerData.acf.social_media_accounts.map((item: any) => ({
+                    ...item,
+                    social_media_link: {
+                        ...(item?.social_media_link ?? {}),
+                        url: normalizeWpLink(item?.social_media_link?.url) || "#",
+                        target: item?.social_media_link?.target || "_blank",
+                    },
+                }))
+                : footerData.acf.social_media_accounts,
             footer_menu: Array.isArray(footerData.acf.footer_menu)
                 ? footerData.acf.footer_menu.map((item: any) => ({
                     ...item,
