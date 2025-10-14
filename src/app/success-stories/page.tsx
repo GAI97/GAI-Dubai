@@ -2,7 +2,7 @@ import { fetchSuccessStories } from "@/lib/wp-rest"
 import { Send } from "lucide-react"
 import SuccessStoriesCarousel from "@/components/SuccessStoriesCarousel"
 import SuccessStoriesVideos from "@/components/SuccessStoriesVideos"
-import { normalizeWpLink } from "@/lib/wp-rest"
+import { normalizeWpLink, normalizeWpMediaUrl } from "@/lib/wp-rest"
 
 export const dynamic = "force-dynamic"
 
@@ -10,31 +10,19 @@ export default async function SuccessStoriesPage() {
     const data = await fetchSuccessStories()
     const mainStory = data?.[0]
     const allTestimonials = (mainStory?.acf?.stories as any[]) || []
-    const rawVideoList = Array.isArray((mainStory as any)?.acf?.video_list)
+    const videoList = Array.isArray((mainStory as any)?.acf?.video_list)
         ? ((mainStory as any).acf.video_list as any[])
               .filter(Boolean)
-              .map((v) => ({
-                  title: v?.title || v?.video_link?.title || '',
-                  url: normalizeWpLink(v?.video_link?.url) || '',
-              }))
+              .map((v) => {
+                  const thumbRaw = v?.thumbnail?.sizes?.medium_large || v?.thumbnail?.sizes?.medium || v?.thumbnail?.url
+                  return {
+                      title: v?.title || v?.video_link?.title || '',
+                      url: normalizeWpLink(v?.video_link?.url) || '',
+                      thumbnailUrl: normalizeWpMediaUrl(thumbRaw) || undefined,
+                  }
+              })
               .filter((v) => v.url)
         : []
-
-    // Fetch Vimeo oEmbed to get thumbnails on the server
-    const videoList = await Promise.all(
-        rawVideoList.map(async (v) => {
-            try {
-                const oembedUrl = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(v.url)}`
-                const res = await fetch(oembedUrl, { cache: 'no-store' })
-                if (!res.ok) return v
-                const json = await res.json() as any
-                const thumb: string | undefined = json?.thumbnail_url
-                return { ...v, thumbnailUrl: thumb }
-            } catch {
-                return v
-            }
-        })
-    )
 
     return (
         <main className="min-h-screen bg-white">
