@@ -11,8 +11,8 @@ export async function GET() {
     const item = Array.isArray(arr) ? arr[0] : null
     const acf = item?.acf || {}
 
-    // Prefer a small square image for favicon
-    const rawUrl: string | undefined = acf?.favicon?.sizes?.thumbnail || acf?.favicon?.url
+    // Prefer 250x250 medium (square) for favicon, fall back to original
+    const rawUrl: string | undefined = acf?.favicon?.sizes?.medium || acf?.favicon?.url || acf?.favicon?.sizes?.thumbnail
     if (!rawUrl) return new Response(null, { status: 204 })
 
     const modified: string | undefined = item?.modified || item?.date || undefined

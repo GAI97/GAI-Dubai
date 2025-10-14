@@ -1,23 +1,6 @@
 import { Mail, Clock, Facebook, Instagram, Twitter, Youtube } from "lucide-react"
 import FadeIn from "@/components/FadeIn"
-
-async function fetchTopBar() {
-	const baseUrl = process.env.WP_HEADER_TOP_BAR_URL || "http://gai.local/wp-json/wp/v2/top-bar-header"
-	const url = `${baseUrl}?per_page=1&orderby=modified&order=desc`
-	const res = await fetch(url, { cache: "no-store" })
-	if (!res.ok) return null
-	const arr = (await res.json()) as any[]
-	const item = Array.isArray(arr) ? arr[0] : null
-	if (!item) return null
-	const acf = item.acf || {}
-	const workingHours: string | undefined = acf["working_hours"] || undefined
-	const emailHref: string | undefined = (acf["email_url"]?.url as string) || (acf["email"] ? `mailto:${acf["email"]}` : undefined)
-	const socials: Array<{ label?: string; href?: string }> = Array.isArray(acf["social_media"]) ? acf["social_media"].map((r: any) => ({
-		label: r?.social_media,
-		href: r?.social_media_link,
-	})) : []
-	return { workingHours, emailHref, socials }
-}
+import { fetchHeaderTopBar } from "@/lib/wp-rest"
 
 function SocialIcon({ name }: { name?: string }) {
 	const key = (name || "").toLowerCase()
@@ -32,9 +15,9 @@ function SocialIcon({ name }: { name?: string }) {
 }
 
 export default async function TopBarServer() {
-	const data = await fetchTopBar()
+	const data = await fetchHeaderTopBar()
 	const workingHours = data?.workingHours || ""
-	const emailHref = data?.emailHref
+	const emailHref = data?.email
 	const emailLabel = emailHref ? emailHref.replace(/^mailto:/i, "") : ""
 	const socials = data?.socials || []
 	return (

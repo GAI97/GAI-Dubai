@@ -56,7 +56,7 @@ export default async function RootLayout({
       const arr = (await res.json()) as any[];
       const item = Array.isArray(arr) ? arr[0] : null;
       const acf = item?.acf || {};
-      const raw = acf["favicon"]?.url || acf["favicon"]?.sizes?.["medium"];
+      const raw = acf["favicon"]?.sizes?.["medium"] || acf["favicon"]?.url || acf["favicon"]?.sizes?.["thumbnail"];
       const modified: string | undefined = item?.modified || item?.date || undefined;
       // Point to our proxy route to ensure /favicon.ico fallback matches and to control caching
       headFaviconUrl = modified ? `/favicon.ico?v=${encodeURIComponent(modified)}` : "/favicon.ico";

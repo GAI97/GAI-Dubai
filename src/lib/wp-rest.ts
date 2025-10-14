@@ -133,9 +133,10 @@ function extractUrlLike(input: any): string | undefined {
 }
 
 function coerceEmailFromAcf(acf: Record<string, any>): string | undefined {
-	const emailUrl = extractUrlLike(acf['email_url'])
-	if (emailUrl) return /^mailto:/i.test(emailUrl) ? emailUrl : `mailto:${emailUrl}`
-	if (typeof acf['email'] === 'string' && acf['email'].includes('@')) return `mailto:${acf['email']}`
+    // Prefer explicit email field when both are present
+    if (typeof acf['email'] === 'string' && acf['email'].includes('@')) return `mailto:${acf['email']}`
+    const emailUrl = extractUrlLike(acf['email_url'])
+    if (emailUrl) return /^mailto:/i.test(emailUrl) ? emailUrl : `mailto:${emailUrl}`
 	const candidates = ["contact_email", "contactEmail", "mail"]
 	for (const key of candidates) {
 		const raw = acf[key]
@@ -156,22 +157,25 @@ function coerceWorkingHoursFromAcf(acf: Record<string, any>): string | undefined
 }
 
 function coerceSocialsFromAcf(acf: Record<string, any>): Array<{ label?: string; href?: string; icon?: string }> {
-	const flex = acf['social_media']
-	if (Array.isArray(flex)) {
-		return flex
-			.filter((row) => row && (row.acf_fc_layout ? String(row.acf_fc_layout).toLowerCase() === 'social_icons' : true))
-			.map((row) => {
-				const label = row?.social_media || row?.label || row?.platform || undefined
-				const hrefRaw = extractUrlLike(row?.social_media_link ?? row?.href ?? row?.url)
-				return {
-					label,
-					href: ensureAbsoluteHttpUrl(hrefRaw),
-					icon: row?.icon ?? label,
-				}
-			})
-			.filter((s) => !!s.href)
-	}
-	return []
+    const flex = acf['social_media']
+    if (Array.isArray(flex)) {
+        return flex
+            .filter((row) => row && (row.acf_fc_layout ? String(row.acf_fc_layout).toLowerCase() === 'social_icons' : true))
+            .map((row) => {
+                const label = row?.social_media || row?.label || row?.platform || undefined
+                // In your endpoint, social_media_link is a string URL, so prefer it directly
+                const hrefRaw = typeof row?.social_media_link === 'string' && row?.social_media_link
+                    ? row.social_media_link
+                    : extractUrlLike(row?.href ?? row?.url)
+                return {
+                    label,
+                    href: ensureAbsoluteHttpUrl(hrefRaw),
+                    icon: row?.icon ?? label,
+                }
+            })
+            .filter((s) => !!s.href)
+    }
+    return []
 }
 
 export async function fetchHeaderTopBar(): Promise<TopBarData | null> {
