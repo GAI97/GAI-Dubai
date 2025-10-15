@@ -88,7 +88,6 @@ export default async function ContactUsPage() {
 					{/* Contact Form */}
 					<div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
 						<h2 className="text-3xl font-medium text-[#283277] mb-6">Send us a Message</h2>
-\t\t\t\t\t\t\t\t<ContactFormClient />
 						<ContactFormClient />
 
 						{/* Why Us Section - Under the form */}
