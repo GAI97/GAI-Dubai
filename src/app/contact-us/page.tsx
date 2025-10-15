@@ -1,4 +1,5 @@
 import { fetchContactPage } from "@/lib/wp-rest"
+import ContactFormClient from "@/components/ContactFormClient"
 import Image from "next/image"
 import Link from "next/link"
 import { CheckCircle, MapPin, Phone, Mail, Clock, MessageCircle, Facebook, Instagram, Linkedin, Youtube, Send } from "lucide-react"
@@ -87,113 +88,8 @@ export default async function ContactUsPage() {
 					{/* Contact Form */}
 					<div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
 						<h2 className="text-3xl font-medium text-[#283277] mb-6">Send us a Message</h2>
-						<form className="space-y-6">
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<div>
-									<label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-										Full Name *
-									</label>
-									<input
-										type="text"
-										id="fullName"
-										name="fullName"
-										required
-										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
-										placeholder="Enter your full name"
-									/>
-								</div>
-								<div>
-									<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-										Email Address *
-									</label>
-									<input
-										type="email"
-										id="email"
-										name="email"
-										required
-										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
-										placeholder="Enter your email"
-									/>
-								</div>
-							</div>
-
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<div>
-									<label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-										Phone Number / WhatsApp *
-									</label>
-									<input
-										type="tel"
-										id="phone"
-										name="phone"
-										required
-										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
-										placeholder="Enter your phone number"
-									/>
-								</div>
-								<div>
-									<label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
-										Country of Interest *
-									</label>
-									<select
-										id="country"
-										name="country"
-										required
-										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
-									>
-										<option value="">Select a country</option>
-										<option value="australia">Australia</option>
-										<option value="canada">Canada</option>
-										<option value="germany">Germany</option>
-										<option value="uk">United Kingdom</option>
-										<option value="usa">United States</option>
-										<option value="new-zealand">New Zealand</option>
-										<option value="other">Other</option>
-									</select>
-								</div>
-							</div>
-
-							<div>
-								<label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-2">
-									Type of Visa / Service *
-								</label>
-								<select
-									id="service"
-									name="service"
-									required
-									className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors"
-								>
-									<option value="">Select a service</option>
-									<option value="visit-visa">Visit Visa</option>
-									<option value="work-permit">Work Permit</option>
-									<option value="skilled-migration">Skilled Migration</option>
-									<option value="job-seeker-visa">Job Seeker Visa</option>
-									<option value="working-holiday-visa">Working Holiday Visa</option>
-									<option value="other">Other</option>
-								</select>
-							</div>
-
-							<div>
-								<label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-									Message / Inquiry *
-								</label>
-								<textarea
-									id="message"
-									name="message"
-									rows={6}
-									required
-									className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2dc0d9] focus:border-transparent transition-colors resize-none"
-									placeholder="Tell us about your immigration goals and how we can help..."
-								></textarea>
-							</div>
-
-							<button
-								type="submit"
-								className="w-full bg-[#283277] text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-[#1f295f] transition-colors duration-200 focus:ring-2 focus:ring-[#2dc0d9] focus:ring-offset-2"
-							>
-								Send Message
-							</button>
-						</form>
+\t\t\t\t\t\t\t\t<ContactFormClient />
+						<ContactFormClient />
 
 						{/* Why Us Section - Under the form */}
 						{whyUsHeading && whyUsItems.length > 0 && (
